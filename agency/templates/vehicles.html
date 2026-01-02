@@ -1,0 +1,123 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block title %}
+    <title>{{ user.first_name }}-Vehicles</title>
+{% endblock title %}
+
+{% block script %}
+    <script src="/static/js/vehicles.js" defer></script>
+{% endblock script %}
+
+{% block main-content %}
+{% include "other_models.html" %}
+    <main>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="m-0">My Vehicles</h2>
+            <a href="#" id="add-vehicle-btn" class="btn btn-primary" style="margin-bottom:15px"><i class="fas fa-plus"></i> Add</a>
+        </div>
+        <div class="vehicle-wrapper">
+            <section id="topVehicles" class="vh-60">
+                {% if vehicles %}
+                <div class="row g-3">
+                    <!-- Vehicle Card Sample -->
+                    {% for v in vehicles %}
+                    <div class="col-md-4">
+                        <div class="vehicle-card shadow-sm">
+                            <div class="vehicle-img-box">
+                                <img src="{{ v.v_img.url }}" class="card-img-top" alt="{{ v.v_model }}">
+                            </div>
+
+                            <div class="vehicle-content">
+                                <h5 class="vehicle-title" style="font-size: 17px; font-weight: 700; margin: 0;">{{ v.v_model }}</h5>
+                                <p class="vehicle-plate" style="margin: 4px 0; font-size: 14px; color: #6b7280;">Plate: {{ v.v_number }}</p>
+                                <div class="vehicle-meta" style="display: felx; gap:6px">
+                                    <span class="badge bg-primary">{{ v.status }}</span>
+                                    <span class="badge bg-dark">{{ v.v_seat }} Seats</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <button class="btn btn-outline-danger" onclick="confirmDelete('vehicle', {{ v.id }})"><i class="fas fa-trash-alt"></i></button>
+                                    <button class="btn btn-outline-primary btn-sm viewBtn mt-2"
+                                        data-img="{{ v.v_img.url }}"
+                                        data-model="{{ v.v_model }}"
+                                        data-plate="{{ v.v_number }}"
+                                        data-type="{{ v.v_type }}"
+                                        data-seats="{{ v.v_seat }}"
+                                        data-pollution="{{ v.pollution }}"
+                                        data-insurance="{{ v.insurance }}"
+                                        data-fitness="{{ v.fitness }}"
+                                        data-permit="{{ v.permit }}"
+                                        data-authorize="{{ v.authorize}}"
+
+                                        {% if v.authorized_driver %}
+                                            data-driver="{{ v.authorized_driver.driver_name }}"
+                                            data-licence="{{ v.authorized_driver.licence_number }}"
+                                            data-phone="{{ v.authorized_driver.driver_phone }}"
+                                            data-driverimg="{{ v.authorized_driver.driver_img.url }}"
+                                        {% else %}
+                                            data-driver="Not Assigned Yet!"
+                                            data-licence="-"
+                                            data-phone="-"
+                                            data-driverimg="Not Assigned Yet!"
+                                        {% endif %}>
+                                        View Details
+                                    </button>
+                                    <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#updateVehicleModal" 
+                                        onclick="openUpdateVehicleModal(
+                                            {{ v.id }},
+                                            '{{ v.v_model }}',
+                                            '{{ v.agency.agency_name }}'
+                                        )">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>No vehicles found</p>
+                {% endif %}
+            </section>
+
+            <!-- BOTTOM - VEHICLE DETAILS (40%) -->
+            <section id="vehicleDetails" class="vh-40 mt-4">
+                <div class="card shadow-sm p-2 h-100">
+                    <button id="reloadVehicleDetails" class="btn btn-light position-absolute" style="top: 10px; right: 10px; border-radius: 50%; padding:6px 10px; box-shadow:0 0 5px rgba(0,0,0,0.2);">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <div class="row h-100 g-3">
+                        <div class="col-md-4 d-flex justify-content-center align-items-center" style="width: 300px; max-height:200px;">
+                            <img id="detailImg" src="" class="img-fluid rounded detail-img" alt="Vehicle Image" style="height:100%; width:100%; object-fit:cover;">
+                        </div>
+
+                        <div class="col-md-7 flex">
+                            <h4 class="mb-2 text-danger text-center w-80">Vehicle Details</h4><br>
+                            <div class="row row-cols-3 g-2">
+                                <div><strong>Model:</strong> <span id="detailModel"></span></div>
+                                <div><strong>Registration No:</strong> <span id="detailPlate"></span></div>
+                                <div><strong>Type:</strong> <span id="detailType"></span></div>
+                                <div><strong>Seats:</strong> <span id="detailSeats"></span></div>
+                                <div><strong>Pollution:</strong> <span id="detailPollution"></span></div>
+                                <div><strong>Insurance:</strong> <span id="detailInsurance"></span></div>
+                                <div><strong>Fitness:</strong> <span id="detailFitness"></span></div>
+                                <div><strong>Permit:</strong> <span id="detailPermit"></span></div>
+                                <div><strong>Authorize:</strong> <span id="detailAuthorize"></span></div>
+                                <div><strong>Driver:</strong> <span id="detailDriver"></span></div>
+                                <div><strong>Licence No.:</strong> <span id="detailLicence"></span></div>
+                                <div><strong>Phone No.:</strong> <span id="detailPhone"></span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 d-flex justify-content-center align-items-center">
+                            <img id="detailDriverImg" src="" alt="Driver Image"class="img-fluid rounded"style="height:150px; width:150px; object-fit:cover; border:2px solid #ccc;">
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    {% block add-vehicle %}
+    {% endblock add-vehicle %}
+{% endblock main-content %}

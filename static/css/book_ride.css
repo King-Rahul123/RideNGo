@@ -1,0 +1,239 @@
+.booking-card{
+    background:#ffffff; /* card */
+    border-radius: 12px;
+    padding: 22px;
+    box-shadow: 0 8px 30px rgba(11,24,50,0.08);
+    border: 1px solid rgba(12,18,32,0.04);
+}
+.booking-header{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+.booking-header h1{
+    font-size: 20px;
+    margin: 0;
+}
+.booking-header .muted{
+    color:#6b7280;
+    font-size: 13px;
+}
+
+.booking-form{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px
+}
+.booking-form label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+.booking-form input[type="text"],
+.booking-form input[type="number"],
+.booking-form input[type="date"],
+.booking-form input[type="time"],
+.booking-form input[type="tel"],
+.booking-form select,
+.booking-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e6eef9;
+    background:#fbfdff;
+    font-size: 14px;
+    outline: none;
+    transition: box-shadow .15s, border-color .12s;
+}
+.booking-form input:focus,
+.booking-form select:focus,
+.booking-form textarea:focus {
+    box-shadow: 0 6px 18px rgba(15,98,254,0.08);
+    border-color:#0f62fe
+}
+
+.input-hint{
+    display: flex;
+    flex-direction: column
+}
+.input-hint small{
+    color:#6b7280;
+    font-weight: 500;
+    margin-top: 6px
+}
+
+.two-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px
+}
+.input-with-addon {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.input-with-addon input {
+    flex: 1;
+}
+.muted-addon {
+    background:#f3f5fb;
+    padding:6px 8px;
+    border-radius:8px;
+    font-size:12px;
+    color:#6b7280
+}
+
+.full-row {
+    grid-column: 1 / -1;
+}
+.actions {
+    display:flex;
+    gap:10px;
+    justify-content:flex-end;
+    margin-top:12px;
+}
+.btn {
+    padding:10px 16px;
+    border-radius:10px;
+    border:1px solid transparent;
+    cursor:pointer;
+    font-weight:600;
+}
+.btn.ghost{
+    background:transparent;
+    border-color:#e6eef9;
+    color:#0b1724;
+}
+.btn.primary{
+    background:linear-gradient(90deg,#0f62fe,#7c3aed);
+    color:white;
+    box-shadow:0 8px 30px rgba(12,44,99,0.14)
+}
+
+.booking-footer{
+    margin-top:12px;
+    color:#6b7280;
+    font-size:13px;
+}
+
+/* Responsive */
+@media (max-width:780px){
+    .booking-form{
+        grid-template-columns: 1fr;
+    }
+    .two-grid{
+        grid-template-columns: 1fr;
+    }
+    .actions{
+        justify-content: stretch;
+    }
+}
+
+.pickup-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+.pickup-row .input-col {
+    flex: 1;
+}
+#pickupMap {
+    width: 320px;
+    height: 180px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+@media (max-width:720px) {
+    .pickup-row {
+        flex-direction: column;
+    }
+    .pickup-row #pickupMap {
+        width: 100%;
+        height: 220px;
+    }
+}
+
+#carPreviewBox img {
+    height: 120px;
+    object-fit: cover;
+}
+
+.traveller-row {
+    background: #fff;
+}
+
+.vehicle-card {
+    display: flex;
+    gap: 16px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    margin-top: 10px;
+    transition: transform 0.2s ease;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-2px);
+}
+
+.vehicle-img {
+    width: 180px;
+    height: 120px;
+    flex-shrink: 0;
+}
+
+.vehicle-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.vehicle-info {
+    flex: 1;
+}
+
+.vehicle-info h4 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.vehicle-info .agency {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.vehicle-info .badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.vehicle-info .specs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+}
+
+.vehicle-info .specs li {
+    padding: 3px 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .vehicle-card {
+        flex-direction: column;
+    }
+
+    .vehicle-img {
+        width: 100%;
+        height: 180px;
+    }
+}

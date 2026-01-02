@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock style %}
+
+{% block script %}
+    <script src="{% static 'js/login.js' %}" defer></script>
+{% endblock script %}
+
+{% block main-content %}
+    <section class="h-100 gradient-form">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-xl-10">
+                    <div class="card rounded-3 text-black overflow-hidden custom-card">
+                        <div class="row g-0 align-items-stretch d-flex flex-row">
+                            <!-- LEFT: Login Form -->
+                            <div class="col-lg-6 d-none d-lg-flex gradient-custom-2 align-items-center justify-content-center">
+                                <div class="promo-text px-4">
+                                    <img src="{% static 'media/logo.jpeg' %}" class="logo" alt="logo" style="border-radius: 50%;" />
+                                    <h3 class="mb-3">We are more than just a company</h3>
+                                    <p class="mb-0">
+                                    RideNGo ensures comfort, safety, and a seamless riding experience for all our customers.
+                                    Join us and explore a smarter way to commute.
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- RIGHT: Promotional Section -->
+                            <div class="col-lg-6 left-panel">
+                                <div class="card-body p-5 d-flex flex-column justify-content-center">
+                                    <div class="text-center logo-wrap">
+                                        <h2 class="mt-2 mb-0"><u>Register</u></h2>
+                                    </div><br>
+
+                                    <form method="post" action="" novalidate class="mt-4 w-100">
+                                        {% csrf_token %}
+                                        {% comment %} <div style="display: flex; justify-content: center; align-items: center; gap: 25px;">
+                                            <a><i class="fab fa-google" style="border: 1px solid #ccc; border-radius: 50%; padding: 10px;"></i></a>
+                                            <a><i class="fab fa-facebook-f" style="border: 1px solid #ccc; border-radius: 50%; padding: 10px;"></i></a>
+                                            <a><i class="fab fa-apple" style="border: 1px solid #ccc; border-radius: 50%; padding: 10px;"></i></a>
+                                        </div><br>
+                                        <p style="text-align: center; font-size: 12px; letter-spacing: 2px;">----------------- OR -----------------</p><br> {% endcomment %}
+                                        <div class="form-outline">
+                                            <label class="form-label" for="id_username">Username</label>
+                                            <input type="text" id="id_username" name="username" class="form-control" placeholder="Enter username" required>
+                                        </div>
+                                        <div class="form-outline">
+                                            <label class="form-label" for="id_agency_name">Travelling Agency Name</label>
+                                            <input type="text" id="id_agency_name" name="agency_name" class="form-control" placeholder="Enter agency name" required>
+                                        </div>
+                                        <div class="form-outline">
+                                            <label class="form-label" for="id_email">Email</label>
+                                            <input type="text" id="id_email" name="email" class="form-control" placeholder="Enter email-id" required>
+                                        </div>
+                                        <div class="form-outline">
+                                            <label class="form-label" for="id_phone">Phone</label>
+                                            <input type="text" id="id_phone" name="phone" class="form-control" placeholder="Enter mobile number" required>
+                                        </div>
+                                        <div class="form-outline">
+                                            <label class="form-label" for="id_password">Password</label>
+                                            <div class="pw-wrap">
+                                                <input type="password" id="id_password" name="password" class="form-control" placeholder="Enter password" required>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="signin-btn mt-2">Sign In</button>
+                                        <br><br>
+                                        <!-- LEFT + RIGHT LINKS ROW -->
+                                        <div class="form-links-row">
+                                            <p class="create-text mb-0" style="text-align: left;">Have an account? <a href="{% url 'login' %}">Log in</a></p>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div> <!-- /row -->
+                    </div> <!-- /card -->
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock main-content %}

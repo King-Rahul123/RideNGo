@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pictures.css' %}">
+{% endblock style %}
+
+{% block script %}
+    <script src="{% static 'js/pictures.js' %}" defer></script>
+{% endblock script %}
+
+{% block header-buttons %}
+<div>
+    <button class="booking_ride" onclick="window.location.href='{% url 'ride_home' %}'" title="Book your ride now" style="background: #1bd446ff;">Book a Ride</button>
+    <button class="login" onclick="window.location.href='{% url 'login' %}'" title="Agency Login Only" style="background: #ff914d;">Agency Login</button>
+</div>
+{% endblock header-buttons %}
+
+{% block main-content %}
+    <section class="pictures-section">
+        <div class="container py-5">
+            <h2 class="section-title text-center mb-4">Our Fleet in Action</h2>
+            <div class="pictures-grid">
+                <div class="picture-item">
+                    <img src="{% static 'media/pic1.jpg' %}" alt="Picture 1">
+                </div>
+                <div class="picture-item">
+                    <img src="{% static 'media/pic2.jpg' %}" alt="Picture 2">
+                </div>
+                <div class="picture-item">
+                    <img src="{% static 'media/pic3.jpg' %}" alt="Picture 3">
+                </div>
+                <div class="picture-item">
+                    <img src="{% static 'media/pic4.jpg' %}" alt="Picture 4">
+                </div>
+                <div class="picture-item">
+                    <img src="{% static 'media/pic5.jpg' %}" alt="Picture 5">
+                </div>
+                <div class="picture-item">
+                    <img src="{% static 'media/pic6.jpg' %}" alt="Picture 6">
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock main-content %}
+
+{% block footer %}
+    {% include "footer.html" %}
+{% endblock footer %}
+

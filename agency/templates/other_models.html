@@ -1,0 +1,380 @@
+{% block add-driver %}
+<!-- Add Driver Modal (Bootstrap) -->
+<div class="modal fade" id="addDriverModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="addDriverForm" method="post" action="{% url "add_drivers" %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Driver</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Full name</label>
+                            <input name="driver_name" id="addDriverName" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Upload Photo</label>
+                            <input type="file" id="driver_image" name="driver_img" accept="image/*" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">DOB / Age</label>
+                            <!-- container row -->
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div id="dobWrapper" class="p-1 border rounded d-flex flex-column" style="cursor:pointer;">
+                                        <small class="text-muted">Click to enter DOB</small>
+                                        <input type="date" name="driver_dob" id="driver_dob" class="form-control mt-1" disabled style="pointer-events: none;">
+                                    </div>
+                                </div>
+
+                                <!-- Age container (click to enable Age, disables DOB) -->
+                                <div class="col-6">
+                                    <div id="ageWrapper" class="p-1 border rounded d-flex flex-column" style="cursor:pointer;">
+                                        <small class="text-muted">Click to enter Age</small>
+                                        <input type="number" name="driver_age" id="driver_age" class="form-control mt-1" min="16" max="100" disabled placeholder="Age" style="pointer-events: none;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input name="driver_phone" id="driver_phone" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Licence number</label>
+                            <input name="licence_number" id="addLicence" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Licence Type</label>
+                            <select name="licence_type" id="licence_type" class="form-select">
+                                <option value="">-- Select --</option>
+                                <option value="LMV">LMV</option>
+                                <option value="HGV">HGV</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Licence Valid Till</label>
+                            <input type="date" name="validity" id="validity" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Upload Licence (image/PDF)</label>
+                            <input type="file" name="licence_file" id="licence_File" class="form-control">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+                            <textarea name="notes" id="addNotes" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Add Driver</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock add-driver %}
+
+{% block add-vehicle %}
+<!-- Add Vehicle Modal -->
+<div id="addVehicleModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h4>Add Vehicle</h4>
+            <button class="modal-close" aria-label="Close">&times;</button>
+        </div>
+        <form id="add-vehicle-form" method="post" action="{% url 'add_vehicles' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-field">
+                <label for="v_type">Vehicle Type:</label>
+                <select id="v_type" name="v_type" required>
+                    <option value="select" disabled selected>--- Select vehicle type ---</option>
+                    <option value="car">Car</option>
+                    <option value="tourist-bus(mini)">Tourist Bus (Mini)</option>
+                    <option value="tourist-bus">Tourist Bus</option>
+                    <option value="luxury-bus">Luxury Bus</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="seats">Number of Seats:</label>
+                <select id="seats" name="seats" required>
+                    <option value="" disabled selected>--- Select Seat ---</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="v_model">Model Name:</label>
+                <input type="text" id="models" name="v_model" placeholder="Car Model Name" required>
+            </div>
+
+            <div class="form-field">
+                <label for="v_number">Registration Number:</label>
+                <input type="text" id="plate_number" name="v_number" placeholder="Registration Number" required>
+            </div>
+
+            <div class="form-field">
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                    <option value="active">Active</option>
+                    <option value="maint">Maintenance</option>
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="v_img">Vehicle Image:</label>
+                <input type="file" id="vehicle_image" name="v_img" accept="image/*" class="form-control" required>
+            </div>
+
+            <div class="form-field full">
+                <div class="container-fluid p-0">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="pollution" class="form-label">Pollution Date:</label>
+                            <input type="date" class="form-control" id="pollution" name="pollution" required>
+
+                            <label for="fitness" class="form-label mt-3">Fitness Date:</label>
+                            <input type="date" class="form-control" id="fitness" name="fitness" required>
+
+                            <label for="insurance" class="form-label mt-3">Insurance Date:</label>
+                            <input type="date" class="form-control" id="insurance" name="insurance" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="permit" class="form-label">Permit Date:</label>
+                            <input type="date" class="form-control" id="permit" name="permit" required>
+
+                            <label for="authorize" class="form-label mt-3">Authorization Date:</label>
+                            <input type="date" class="form-control" id="authorization" name="authorize">
+
+                            <label class="form-label mt-3">DL Number (Authorize Driver)</label>
+                            <select id="driver_dlName_add" name="authorized_driver" class="form-select">
+                                <option value="" disabled selected>--- Select Driver ---</option>
+                                <option value="None">Unassigned</option>
+                                {% for d in drivers %}
+                                    <option value="{{ d.id }}">
+                                        {{ d.driver_name }} — {{ d.licence_number }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success" style="margin-top:10px">Add Vehicle</button>
+        </form>
+    </div>
+</div>
+{% endblock add-vehicle %}
+
+{% block forget-password %}
+<!-- Forget Password Modal (Bootstrap 5) -->
+<div class="modal fade" id="forgetPasswordModal" tabindex="-1" aria-labelledby="forgetPasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" action="{% url 'password_reset_request' %}" id="forgetPasswordForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="forgetPasswordModalLabel">Reset password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="reset_email" class="form-label">Email</label>
+                        <input name="email" type="email" id="reset_email" class="form-control" placeholder="you@example.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">New password</label>
+                        <input name="new_password" type="password" id="new_password" class="form-control" minlength="6" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm new password</label>
+                        <input name="confirm_password" type="password" id="confirm_password" class="form-control" minlength="6" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Reset password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock forget-password %}
+
+{% block update_vehicle %}
+<!-- Update Vehicle Modal (Bootstrap 5) -->
+<div class="modal fade" id="updateVehicleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="updateVehicleForm" method="post" enctype="multipart/form-data" action="">
+                {% csrf_token %}
+                <input type="hidden" name="vehicle_id" id="update_vehicle_id">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Vehicle</h5>
+                    <span class="small ms-2">(Fill only that field, which one you want to update)</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12 text-center mb-3">
+                            <h5 class="fw-bold text-primary" id="updateAgencyName"></h5>
+                            <h6 class="text-muted" id="updateVehicleName"></h6>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Status</label>
+                            <select id="update_status" name="status" class="form-select" required>
+                                <option value="active">Active</option>
+                                <option value="maint">Maintenance</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Vehicle Image (leave empty to keep current)</label>
+                            <input type="file" id="update_vehicle_image" name="v_img" accept="image/*" class="form-control">
+                        </div>
+
+                        <div class="col-12">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Pollution Date</label>
+                                    <input type="date" id="update_pollution" name="pollution" class="form-control">
+
+                                    <label class="form-label mt-3">Fitness Date</label>
+                                    <input type="date" id="update_fitness" name="fitness" class="form-control">
+
+                                    <label class="form-label mt-3">Insurance Date</label>
+                                    <input type="date" id="update_insurance" name="insurance" class="form-control">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label">Permit Date</label>
+                                    <input type="date" id="update_permit" name="permit" class="form-control">
+
+                                    <label class="form-label mt-3">Authorization Date</label>
+                                    <input type="date" id="update_authorization" name="authorize" class="form-control">
+
+                                    <label class="form-label mt-3">DL Number (Authorize Driver)</label>
+                                    <select id="driver_dlName_update" name="authorized_driver" class="form-select">
+                                        <option value="">--- Select Driver ---</option>
+                                        {% for d in drivers %}
+                                            <option value="{{ d.id }}">
+                                                {{ d.driver_name }} — {{ d.licence_number }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock update_vehicle %}
+
+{% block edit-driver %}
+<!-- Edit Driver Modal (Bootstrap 5) -->
+<div class="modal fade" id="editDriverModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="editDriverForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="driver_id" id="editDriverId">
+
+                <!-- Modal Header (same pattern as Update Vehicle) -->
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Driver</h5>
+                    <span class="small ms-2">(Fill only the fields you want to update)</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <div class="row g-3">
+
+                        <!-- Driver Identity Header -->
+                        <div class="col-12 text-center mb-3">
+                            <h5 class="fw-bold text-primary" id="updateDriverName"></h5>
+                            <h6 class="text-muted" id="updateDriverLicence"></h6>
+                        </div>
+
+                        <!-- Basic Info -->
+                        <div class="col-md-6">
+                            <label class="form-label">First Name</label>
+                            <input name="first_name" id="editFirstName" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            <input name="last_name" id="editLastName" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input name="phone" id="editPhone" class="form-control">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Licence Number</label>
+                            <input name="licence_number" id="editLicence" class="form-control">
+                        </div>
+
+                        <!-- Assignment + Files -->
+                        <div class="col-md-6">
+                            <label class="form-label">Assign Vehicle</label>
+                            <select name="vehicle" id="editVehicle" class="form-select">
+                                <option value="">-- Unassigned --</option>
+                                {% for v in vehicles %}
+                                    <option value="{{ v.id }}">
+                                        {{ v.v_model }} — {{ v.v_number }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Upload Licence (image / PDF)</label>
+                            <input type="file" name="licence_file" id="editLicenceFile" class="form-control">
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+                            <textarea name="notes" id="editNotes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock edit-driver %}
+

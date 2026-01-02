@@ -1,0 +1,84 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block title %}
+    <title>{{user.first_name}}-Dashboard</title>
+{% endblock title %}
+
+{% block main-content %}
+    {% include "other_models.html" %}
+    <main>
+        <div class="cards">
+            <div class="card">
+                <div class="label">Total Earnings</div>
+                <div class="value">₹0</div>
+            </div>
+            <div class="card">
+                <div class="label">Total Vehicles</div>
+                <div class="value">{{ total_vehicles }}</div>
+            </div>
+            <div class="card">
+                <div class="label">Pending Bookings</div>
+                <div class="value">0</div>
+            </div>
+        </div>
+        <div class="content">
+            <div>
+                <div class="panel" id="vehicles">
+                    <h3 style="margin-top:18px">Recent Bookings</h3>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking Name</th>
+                                <th>Place</th>
+                                <th>Vehicle</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{b.username}}</td>
+                                <td>{{b.destination}}</td>
+                                <td>{{b.v_model}}</td>
+                                <td>{{b.booking_from}}</td>
+                                <td>{{b.amount}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <aside class="snapshot">
+                <div class="panel">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div style="font-weight:600">Earnings Snapshot</div>
+                        <div style="font-size:13px;color:#64748b">Payouts</div>
+                    </div>
+                    <div style="margin-top:12px">
+                        <div style="font-size:13px;color:#64748b">This month</div>
+                        <div style="font-weight:700;font-size:20px;margin-top:6px">₹1240</div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+                        <a class="btn primary" href="#">Withdraw</a>
+                        <a class="btn ghost" href="#">Reports</a>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div style="font-weight:600">Quick Actions</div>
+                        <div class="quick" style="margin-top:10px">
+                        <a href="#" data-bs-toggle="modal" id="add-vehicle-btn">Add Vehicle</a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#addDriverModal">Add Drivers</a>
+                        <a href="#">Create Booking</a>
+                    </div>  
+                </div>
+                <div class="panel">
+                    <h7 style="font-weight:600">Notifications</h7>
+                    <p style="margin-top:10px;font-size:14px;color:#334155">You have no new notifications.</p>
+                </div>
+            </aside>
+        </div>
+    </main>
+{% endblock main-content %}

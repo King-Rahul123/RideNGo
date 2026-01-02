@@ -1,0 +1,143 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %}
+    <title>{{ user.first_name }} - Driver Details</title>
+{% endblock title %}
+
+{% block script %}
+    <script src="/static/js/drivers.js"></script>
+{% endblock script %}
+
+{% block main-content %}
+{% include "other_models.html" %}
+<main class="main">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0">Driver Details</h2>
+            <div>
+                <button id="add-driver-btn" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#addDriverModal"><i class="fas fa-plus-circle"></i> Add Driver</button>
+                <input id="searchDriver" class="form-control d-inline-block" style="width:260px;" placeholder="Search by name, phone or licence">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Drivers list -->
+                <div class="card mb-3">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light">
+                                    <div class="medium text-muted"><strong>Total drivers: </strong>{{ driver|length }}</div>
+                                    {% comment %} <button type="button" class="btn btn-light position-absolute reload-page-btn" style="font-size:12px; top: 10px; right: 10px; border-radius: 50%; padding:4px 7px; box-shadow:0 0 5px rgba(0,0,0,0.2);"><i class="fas fa-sync-alt"></i></button> {% endcomment %}
+                                    <tr>
+                                        <th style="width:56px;"></th>
+                                        <th>Name</th>
+                                        <th>Phone</th>
+                                        <th>Licence Type</th>
+                                        <th>Rating</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="driversTable">
+                                    {% for d in driver %}
+                                    <tr data-driver-id="{{ d.id }}">
+                                        <td>
+                                            {% if d.driver_img %}
+                                                <img src="{{ d.driver_img.url }}" class="rounded-circle" alt="Driver Image" style="width:44px;height:44px;object-fit:cover;">
+                                            {% else %}
+                                                <div class="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center" style="width:44px;height:44px;font-weight:600;">
+                                                    {{ d.driver_name|slice:":1"|upper }}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div><strong>{{ d.driver_name }}</strong></div>
+                                            <small class="text-muted">Licence: {{ d.licence_number }}</small>
+                                        </td>
+                                        <td>{{ d.driver_phone }}</td>
+                                        <td>{% if d.licence_type %}
+                                                {{ d.licence_type }}
+                                            {% else %}
+                                                <span class="text-muted">--</span>{% endif %}</td>
+                                        <td>
+                                            <div class="small">
+                                                {% for i in "12345" %}
+                                                {% if forloop.counter <= d.rating|default:0 %}
+                                                    <i class="fas fa-star"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                                {% endfor %}
+                                                <span class="ms-2">({{ d.rating|default:0 }})</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-end">
+                                            <button class="btn btn-sm btn-outline-primary me-1" onclick="showDriverPreview(this)"
+                                                data-name="{{ d.driver_name }}"
+                                                data-phone="{{ d.driver_phone }}"
+                                                data-age="{{ d.driver_age|default:'' }}"
+                                                data-dob="{{ d.driver_dob|date:'Y-m-d'|default:'' }}"
+                                                data-licenceno="{{ d.licence_number }}"
+                                                data-licencetype="{{ d.licence_type }}"
+                                                data-validity="{{ d.validity|date:'Y-m-d'|default:'' }}"
+                                                data-salary="{{ d.salary|default:'Not Set' }}"
+                                                data-status="{% if d.authorized_vehicles.first %}Assigned{% else %}Available{% endif %}"
+                                                data-img="{% if d.driver_img %}{{ d.driver_img.url }}{% endif %}"
+                                                data-licencefile="{% if d.licence_file %}{{ d.licence_file.url }}{% endif %}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                            <button class="btn btn-sm btn-outline-warning me-1" data-bs-toggle="modal" data-bs-target="#editDriverModal" data-driver-id="{{ d.id }}"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('driver', {{ d.id }})"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="6" class="text-center py-4">No drivers found.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body" id="selectedDriverCard">
+                        <h6 class="card-title">Driver Preview</h6>
+                        <p id="noSelection" class="text-muted">Select a driver to view quick details.</p>
+                        <div id="driverPreview" style="display:none;">
+                            <div class="d-flex align-items-center mb-2">
+                                <div id="previewAvatar" class="avatar rounded-circle bg-secondary text-white d-inline-flex justify-content-center align-items-center me-2" style="width:56px;height:56px;font-size:20px;"><i class="fas fa-user"></i></div>
+                                <div>
+                                    <div id="previewName" class="fw-bold">Name</div>
+                                    <div id="previewPhone" class="small text-muted">Phone</div>
+                                </div>
+                            </div>
+                            <p class="mb-1 small"><strong>Age / DOB:</strong> <span id="previewAgeDob"></span></p>
+                            <p class="mb-1 small"><strong>Licence No.:</strong> <span id="previewLicenceNo"></span></p>
+                            <p class="mb-1 small"><strong>Licence Type:</strong> <span id="previewLicenceType"></span></p>
+                            <p class="mb-1 small"><strong>Licence Validity:</strong> <span id="previewLicenceValidity"></span></p>
+                            <p class="mb-1 small"><strong>Salary:</strong> <span id="previewSalary"></span></p>
+                            <p class="mb-1 small"><strong>Status:</strong> <span id="previewStatus"></span></p>
+                            <p class="mb-1 small"><span id="previewLicenceImage"></span></p>
+                            <div class="d-flex gap-2 mt-3">
+                                <button class="btn btn-sm btn-primary" id="msgDriverBtn"><i class="fas fa-comment-alt"></i> Message</button>
+                                <button class="btn btn-sm btn-outline-secondary" id="callDriverBtn"><i class="fas fa-phone"></i> Call</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% block edit-driver %}
+{% endblock edit-driver %}
+
+{% block add-driver %}
+{% endblock add-driver %}
+
+{% endblock main-content %}

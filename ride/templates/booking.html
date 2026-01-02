@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/book_ride.css' %}">
+    <!-- BOOTSTRAP 5 CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome (for map icon) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
+{% endblock style %}
+
+{% block script %}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="{% static 'js/booking.js' %}"></script>
+
+    <!-- BOOTSTRAP 5 JS BUNDLE -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock script %}
+
+{% block header-buttons %}
+<div>
+    <button class="booking_ride" onclick="window.location.href='{% url 'status' %}'" title="Book your ride now" style="font-size:13px; background: #1bd446ff;">Booking Status</button>
+</div>
+{% endblock header-buttons %}
+
+{% block main-content %}
+<main>
+    <section class="booking-card">
+        <div class="booking-header">
+            <h1><b><u>Book Your Ride</u></b></h1>
+            <p>Fill out the form below to request your preferred vehicle and travel details.</p>
+        </div>
+        <form id="bookingForm" method="post" action="{% url 'create-booking' %}" class="booking-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="col">
+                <label for="v_type">Vehicle Type:</label>
+                    <select id="v_type" name="v_type" required>
+                        <option value="select" disabled selected>--- Select vehicle type ---</option>
+                        <option value="car">Car</option>
+                        <option value="tourist-bus(mini)">Tourist Bus (Mini)</option>
+                        <option value="tourist-bus">Tourist Bus</option>
+                        <option value="luxury-bus">Luxury Bus</option>
+                    </select><br><br>
+
+                <label for="agency">Service Provider</label>
+                <select id="travellers" name="travellers" required>
+                    <option value="" disabled selected>--- Select the Service Provider ---</option>
+                    {% for a in agencies %}
+                        <option data-model="{{ v.v_model }}" value="{{ a.id }}">{{ a.agency_name }}</option>
+                    {% endfor %}
+                </select><br><br>
+
+                <label for="pickup">Address <span class="text-secondary" style="font-size: 10px">(Click the map icon to choose exact location)</span></label>
+                <div class="pickup-row">
+                    <div class="input-col">
+                        <div class="map-input-wrapper" style="position:relative;">
+                            <input type="text" id="pickup" name="pickup" placeholder="Full pickup address, landmark (if any)" required style="padding-right:42px;">
+                            <button type="button" id="getMyLocationBtn" title="Select exact location on map" style="position: absolute; right: 6px; top: 5px; height: 32px; padding: 0 8px; border-radius: 6px; border: none; background: transparent"><i class="fas fa-map-marker-alt"></i></button>
+                        </div>
+                    </div>
+                </div><br>
+
+                <div class="two-grid">
+                    <div>
+                        <label for="fromDate">Booking from</label>
+                        <input type="date" id="fromDate" name="fromDate" required>
+                    </div>
+                    <div>
+                        <label for="toDate">Booking to</label>
+                        <input type="date" id="toDate" name="toDate" required>
+                    </div>
+                </div><br>
+
+                <label for="mobile">Mobile number</label>
+                <input type="tel" id="mobile" name="mobile" placeholder="+91 XXXXX-XXXXX" pattern="[+]{0,1}[0-9]{2}\s[0-9]{5}[-]{0,1}[0-9]{5}" required><br>
+            </div>
+
+            <div class="col">
+                <label for="seats">Number of Seats</label>
+                    <select id="seats" name="seats" required>
+                    <option value="" disabled selected>--- Select Seat ---</option>
+                </select><br><br>
+
+                <label for="v_model">Choose the car model</label>
+                <select id="v_model" name="v_model" required>
+                    <option value="" disabled selected>— Select car model —</option>
+                    {% for v in vehicles %}
+                    <option
+                        value="{{ v.id }}"
+                        data-model="{{ v.v_model }}"
+                        data-seats="{{ v.v_seat }}"
+                        data-fuel="{{ v.fuel_type }}"
+                        data-image="{{ v.v_img.url }}"
+                        data-ac="{{ v.is_ac }}"
+                        data-agency="{{ v.agency.agency_name }}"
+                    >
+                        {{ v.v_model }}
+                    </option>
+                    {% endfor %}
+                    <!-- Car models will be dynamically populated here based on car type selection -->
+                </select><br><br>
+
+                <label for="destination">Choose your destination</label>
+                <input type="text" id="destination" name="destination" placeholder="City, landmark or address" required><br><br>
+
+                <label for="pickupTime">Pickup time</label>
+                <input type="time" id="pickupTime" name="pickupTime" required><br><br>
+
+                {% comment %} <label for="amount">Amount (auto generate)</label>
+                <div class="input-with-addon">
+                    <input type="text" id="amount" name="amount" readonly aria-readonly="true" value="₹0">
+                    <button type="button" id="calculateAmount" class="btn primary small-btn">Calculate</button>
+                </div><br> {% endcomment %}
+                
+                <label for="otp-submit">OTP Verification</label>
+                <div class="input-with-addon">
+                    <input type="text" id="otp-submit" name="otp-submit" placeholder="Enter OTP sent to your mobile" required>
+                    {% if not otp_sent %}
+                        <button type="button" id="sendOtp" class="btn primary small-btn">Send OTP</button>
+                    {% elif otp_sent %}
+                        <button type="button" id="resendOtp" class="btn primary small-btn">Resend OTP</button>
+                    {% else %}
+                        <button type="button" id="submitOtp" class="btn primary small-btn">Submit OTP</button>
+                    {% endif %}
+                </div><br>
+            </div>
+
+            <div class="full-row">
+                
+                <label for="purpose">Purpose</label>
+                <input type="text" id="purpose" name="purpose" placeholder="E.g., sightseeing, wedding, daily commute" required><br><br>
+
+                <label for="notes">Notes (optional)</label>
+                <textarea id="notes" name="notes" placeholder="Any special instructions, luggage, child seat, etc." rows="3"></textarea>
+            </div>
+
+            <div class="full-row">
+                <label for="car_details">Details (car and others)</label>
+                <div class="col">
+                    <div id="car_details" name="car_details" class="car-details">
+                    <!-- Car details will be dynamically populated here based on selection -->
+                    </div>
+                </div>
+                <div class="col">
+                    <!-- Dynamically generated car image here -->
+                    {% comment %} <img id="car_image" name="car_image" class="car-image" alt="Selected Car Image" style="max-width:100%; border-radius:8px;"> {% endcomment %}
+                </div>
+            </div>
+
+            <div class="flex-row terms" style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="terms" name="terms" required>
+                <label for="terms">I agree to the <a href="#">terms and conditions</a>.</label>
+            </div>
+
+            <div class="actions">
+                <button type="reset" class="btn ghost">Cancel</button>
+                <button type="submit" class="btn primary">Book Now</button>
+            </div>
+        </form>
+    </section>
+</main>
+{% endblock main-content %}
+
+{% block footer %}
+    {% include "footer.html" %}
+{% endblock footer %}

@@ -1,0 +1,105 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block title %}
+  <title>{{ user.first_name }} - Accounts</title>
+{% endblock title %}
+
+{% block script %}
+    <script src="/static/js/set_amount.js" defer></script>
+{% endblock script %}
+
+{% block main-content %}
+  <div class="container py-4">
+    <h3>Set Amounts per vehicle</h3>
+    <p class="text-muted">Select a vehicle and the form will adapt to the vehicle type's logic (per km / per hour / per seat).</p>
+    <div class="card p-3 mb-3">
+      <div class="mb-3">
+        <label for="vehicleSelect" class="form-label">Vehicle</label>
+        <select id="vehicleSelect" class="form-select">
+          <option value="" disabled selected>--- Select Vehicle model ---</option>
+          {% for v in vehicles %}
+            <option value="{{v.v_number}}">{{ v.v_model }} || {{v.v_number}}</option>
+          {% endfor %}          
+        </select>
+      </div>
+
+        <form id="amountForm" method="POST" style="display:none;">
+          {% csrf_token %}
+          <input type="hidden" name="vehicle_id" id="vehicle_id">
+
+          <div class="mb-3">
+            <label class="form-label">Pricing Mode</label>
+            <div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="pricing_mode" id="mode_fixed" value="fixed" checked>
+                <label class="form-check-label" for="mode_fixed">Fixed</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="pricing_mode" id="mode_manual" value="manual">
+                <label class="form-check-label" for="mode_manual">Manual (set after booking)</label>
+              </div>
+            </div>
+            <small class="text-muted d-block mt-1">Choose Fixed to set rules, or Manual to set amount later per booking.</small>
+          </div>
+
+          <!-- FIXED PRICING BOX -->
+          <div id="fixedOptions" class="border rounded p-3 mb-3">
+              <label class="form-label">Fixed Pricing Type</label>
+
+              <!-- FIXED: amount/km -->
+              <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="fixed_type" id="fixed_per_km" value="per_km" checked>
+                  <label class="form-check-label" for="fixed_per_km">Amount / KM (with minimum KM)</label>
+              </div>
+
+              <!-- FIXED: amount/km BOX (UPDATED: added night, tax, other charges) -->
+              <div id="block_per_km" class="mt-2">
+                  <label class="form-label">Minimum KM</label>
+                  <input type="number" min="1" step="1" name="min_km" id="min_km" class="form-control" placeholder="Enter minimum km (e.g. 10)">
+
+                  <label class="form-label mt-2">Amount per KM (₹)</label>
+                  <input type="number" min="0" step="0.01" name="amount_per_km" id="amount_per_km" class="form-control" placeholder="Enter amount per km">
+
+                  <!-- NEW: Night charge (flat amount) -->
+                  <label class="form-label mt-3">Night Charge (flat, ₹) — optional</label>
+                  <input type="number" min="0" step="0.01" name="night_charge" id="night_charge" class="form-control" placeholder="Enter night surcharge (e.g. 50)">
+
+                  <div class="form-text mt-2">
+                    <strong>Notes:</strong> Others charges should be seted mannually at the time of booking request comes.
+                  </div>
+              </div>
+              <!-- Flat rate box -->
+              {% comment %} <div id="block_flat" style="display:none;" class="mt-2">
+                  <label class="form-label">Flat Amount (₹)</label>
+                  <input type="number" min="0" step="0.01" name="flat_amount" id="flat_amount" class="form-control">
+
+                  <label class="form-label mt-2">Max KM for Flat Rate</label>
+                  <input type="number" min="1" step="1" name="flat_max_km" id="flat_max_km" class="form-control">
+              </div> {% endcomment %}
+          </div>
+
+          <!-- Manual note -->
+          <div id="manualNote" class="alert alert-warning" style="display:none;">
+            Pricing will be set manually after booking. No rate fields are required.
+          </div>
+
+          <!-- Optional fallback: extra per km when flat exceeded -->
+          <div id="postFlatExtra" class="mb-3" style="display:none;">
+            <label class="form-label">Extra amount per KM after flat limit (₹) — OPTIONAL</label>
+            <input type="number" min="0" step="0.01" name="extra_after_flat_per_km" id="extra_after_flat_per_km" class="form-control" placeholder="e.g. 20 (charged per km beyond flat_max_km)">
+            <small class="form-text">If left empty and trip exceeds flat_max_km, you will handle pricing manually or via backend fallback.</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Admin Note (optional)</label>
+            <input name="note" id="note" class="form-control" placeholder="Optional note: e.g. 'Night surcharge applies'">
+          </div>
+
+          <button type="submit" id="saveAmountBtn" class="btn btn-primary">Save Amount</button>
+        </form>
+    </div>
+
+    <div id="noVehicles" class="alert alert-info" style="display:none;">No vehicles found. Please add a vehicle first.</div>
+  </div>
+{% endblock main-content %}

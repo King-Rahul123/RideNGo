@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock style %}
+
+{% block script %}
+    <script src="{% static "js/home.js" %}" defer></script>
+{% endblock script %}
+
+{% block header-buttons %}
+<div>
+    <button class="booking_ride" onclick="window.location.href='{% url 'booking' %}'" title="Book your ride now" style="background: #1bd446ff;">Book a Ride</button>
+    <button class="login" onclick="window.location.href='{% url 'login' %}'" title="Agency Login Only" style="background: #ff914d;">Agency Login</button>
+</div>
+{% endblock header-buttons %}
+
+{% block main-content %}
+<main>
+    <section class="slider">
+        <div class="image-slider">
+            <div class="slides">
+                <img src="{% static 'media/17_seat.png' %}" alt="Tourist Bus" class="slide">
+                <img src="{% static 'media/26_seat.png' %}" alt="Wedding Car" class="slide">
+                <img src="{% static 'media/luxury.jpg' %}" alt="Premium Car" class="slide">
+                <img src="{% static 'media/daily_car.png' %}" alt="Daily Travel Car" class="slide">
+            </div>
+        </div>
+        <div class="slider-controls">
+            <div class="slider-dots">
+                <div class="dot active" id="dot1"></div>
+                <div class="dot" id="dot2"></div>
+                <div class="dot" id="dot3"></div>
+                <div class="dot" id="dot4"></div>
+                <div class="dot" id="dot5"></div>
+            </div>
+            <button class="ride-btn" onclick="location.href='{% url 'booking' %}'">Choose Booking</button>
+        </div>
+        {% comment %} <div class="ride-options">
+            <button class="ride-btn">Tourist Bus</button>
+            <button class="ride-btn">Wedding Car</button>
+            <button class="ride-btn">Premium 4-Wheeler</button>
+            <button class="ride-btn">Daily Travel Car</button>
+        </div> {% endcomment %}
+    </section>
+
+    <section id="about" class="about">
+        <h2>About RideNGo</h2>
+        <p>RideNGo is a multi-agency vehicle booking platform designed to simplify vehicle rentals for customers while giving full control to individual travel agencies.</p><p>The system provides a unified digital environment where multiple agencies can register, log in, and manage their own fleet </p><p> of vehicles, pricing, and bookings. At the same time, users can easily search, filter, and book vehicles based on their needs such as tours, weddings, meetings, and other travel purposes.</p>
+    </section>
+
+    <section class="complaint">
+        <h2>Complaint</h2>
+        <form class="complaint-form">
+            <input type="text" placeholder="Your Name" required>
+            <input type="email" placeholder="Your Email" required>
+            <textarea placeholder="Write your complaint or feedback here..." required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </section>
+</main>
+{% endblock main-content %}
+
+{% block footer %}
+    {% include "footer.html" %}
+{% endblock footer %}

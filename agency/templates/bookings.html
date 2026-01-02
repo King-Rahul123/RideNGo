@@ -1,0 +1,213 @@
+{% extends "dashboard.html" %}
+{% load static %}
+
+{% block title %}
+  <title>{{ user.first_name }} - Bookings</title>
+{% endblock title %}
+
+{% block main-content %}
+<div class="px-3 py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="m-0">Bookings</h2>
+        <a href="{% url "booking" %}" class="btn btn-primary">New Booking</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-3">
+        <div class="card-body">
+            <form class="row gx-2 gy-2 align-items-center" method="get">
+                <div class="col-auto">
+                    <input name="q" value="{{ request.GET.q }}" class="form-control form-control-sm" placeholder="Search by customer, plate or id">
+                </div>
+                <div class="col-auto">
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">All status</option>
+                        {% comment %} <option value="pending" {% if request.GET.status=='pending' %}selected{% endif %}>Pending</option>
+                        <option value="confirmed" {% if request.GET.status=='confirmed' %}selected{% endif %}>Confirmed</option>
+                        <option value="cancelled" {% if request.GET.status=='cancelled' %}selected{% endif %}>Cancelled</option>
+                        <option value="completed" {% if request.GET.status=='completed' %}selected{% endif %}>Completed</option> {% endcomment %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="date" name="date_from" value="{{ request.GET.date_from }}" class="form-control form-control-sm" placeholder="From">
+                </div>
+                <div class="col-auto">
+                    <input type="date" name="date_to" value="{{ request.GET.date_to }}" class="form-control form-control-sm" placeholder="To">
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-sm btn-outline-primary" type="submit">Apply</button>
+                </div>
+                <div class="col-auto ms-auto">
+                    <a href="{% url 'bookings' %}" class="btn btn-sm btn-light"><i class="fas fa-sync-alt"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bookings list -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                        <th class="ps-3">#</th>
+                        <th>Customer</th>
+                        <th>Vehicle</th>
+                        <th>Date / Time</th>
+                        <th>Pickup</th>
+                        <th>Drop</th>
+                        <th class="text-center">Amount</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end pe-3">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% if bookings %}
+                        {% for b in bookings %}
+                        <tr>
+                            <td class="ps-3">{{ b.id }}</td>
+                            <td>
+                                <div class="fw-semibold">{{ b.customer_name }}</div>
+                                <div class="small text-muted">{{ b.customer_phone }}</div>
+                            </td>
+                            <td>
+                                <div class="fw-semibold">{{ b.vehicle.model }}</div>
+                                <div class="small text-muted">{{ b.vehicle.plate }}</div>
+                            </td>
+                            <td>
+                                <div>{{ b.start_datetime|date:"d M Y, H:i" }}</div>
+                                {% if b.duration %}
+                                <div class="small text-muted">{{ b.duration }} hrs</div>
+                                {% endif %}
+                            </td>
+                            <td>{{ b.pickup_location|truncatechars:30 }}</td>
+                            <td>{{ b.drop_location|truncatechars:30 }}</td>
+                            <td class="text-center">₹ {{ b.amount|default:"0.00" }}</td>
+                            <td class="text-center">
+                            {% if b.status == 'pending' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% elif b.status == 'confirmed' %}
+                                <span class="badge bg-primary">Confirmed</span>
+                            {% elif b.status == 'completed' %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elif b.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ b.status }}</span>
+                            {% endif %}
+                            </td>
+                            <td class="text-end pe-3">
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#bookingDetailModal" data-id="{{ b.id }}">View</button>
+                                    {% if b.status == 'pending' %}
+                                    <a href="{% url 'confirm_booking' b.id %}" class="btn btn-sm btn-success">Confirm</a>
+                                    <a href="{% url 'cancel_booking' b.id %}" class="btn btn-sm btn-danger">Cancel</a>
+                                    {% elif b.status == 'confirmed' %}
+                                    <a href="{% url 'complete_booking' b.id %}" class="btn btn-sm btn-success">Complete</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4 text-muted">No bookings found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- pagination -->
+        <div class="card-footer">
+            {% comment %} <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">Showing {{ bookings.paginator.count|default:bookings|length }} bookings</small>
+                {% if bookings.has_other_pages %}
+                <nav>
+                    <ul class="pagination pagination-sm mb-0">
+                    {% if bookings.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ bookings.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                    {% endif %}
+                    {% for p in bookings.paginator.page_range %}
+                        <li class="page-item {% if bookings.number == p %}active{% endif %}">
+                        <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+                        </li>
+                    {% endfor %}
+                    {% if bookings.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ bookings.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                    {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div> {% endcomment %}
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Booking detail modal -->
+    <div class="modal fade" id="bookingDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Booking Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+            <div class="modal-body">
+                <!-- content populated via JS (or server rendered if you prefer) -->
+                <div id="bookingDetailContent">
+                    <div class="row g-3">
+                        <div class="col-md-4 text-center">
+                            <img id="modalVehicleImg" src="{% static 'images/car-placeholder.png' %}" class="img-fluid rounded mb-2" alt="vehicle">
+                            <div class="fw-semibold" id="modalVehicleModel">Model</div>
+                            <div class="small text-muted" id="modalVehiclePlate">Plate</div>
+                        </div>
+                        <div class="col-md-8">
+                            <table class="table table-borderless mb-0">
+                                <tbody>
+                                    <tr><th>Booking ID</th><td id="modalBookingId"></td></tr>
+                                    <tr><th>Customer</th><td id="modalCustomer"></td></tr>
+                                    <tr><th>Phone</th><td id="modalPhone"></td></tr>
+                                    <tr><th>Date / Time</th><td id="modalDateTime"></td></tr>
+                                    <tr><th>Pickup</th><td id="modalPickup"></td></tr>
+                                    <tr><th>Drop</th><td id="modalDrop"></td></tr>
+                                    <tr><th>Amount</th><td id="modalAmount"></td></tr>
+                                    <tr><th>Status</th><td id="modalStatus"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="modalEditBtn" class="btn btn-sm btn-outline-primary">Edit</a>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %} <!-- Small script to load modal details (optional) -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var bookingModal = document.getElementById('bookingDetailModal');
+  bookingModal.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget;
+    var bookingId = button.getAttribute('data-id');
+    // Replace with AJAX call to fetch booking details endpoint (JSON)
+    // Example fetch: `/api/bookings/${bookingId}/`
+    // For now populate placeholders (server-side rendering recommended)
+    document.getElementById('modalBookingId').textContent = bookingId;
+    // TODO: fetch and fill other fields
+  });
+});
+</script> {% endcomment %}
+{% endblock main-content %}

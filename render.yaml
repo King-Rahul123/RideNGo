@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: ridengo
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn RideNGo.wsgi:application"
+    autoDeploy: true

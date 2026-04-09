@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Database
+db.sqlite3
+
+# Environment variables
+.env
+
+# Media files (user uploads)
+media/
+
+# Static files (collected)
+staticfiles/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
